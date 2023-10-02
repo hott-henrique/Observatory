@@ -4,7 +4,7 @@ import flask, pymongo
 
 
 def get_news_db():
-    db = flask.g.get("_MONGODB_INSTANCE")
+    db = getattr(flask.g, "_MONGODB_INSTANCE", None)
 
     if db is None:
         user = os.getenv('JOURNALIST_USER')
@@ -14,7 +14,7 @@ def get_news_db():
                                      password=pwd,
                                      authSource="news")
 
-        db = flask.g._MONGODB_INSTANCE = client.news
+        db = flask.g._MONGODB_INSTANCE = client
 
-    return db
+    return db.news
 

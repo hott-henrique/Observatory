@@ -1,4 +1,5 @@
 import datetime as dt
+import os
 
 import requests
 
@@ -27,9 +28,11 @@ def post_document(doc: dict):
     if "categories" not in doc:
         if type(doc["categories"]) is not list:
             raise TypeError("The categories must be an list[str].")
+
         for category in doc["categories"]:
             if type(category) is not str:
                 raise TypeError("Each category must be an str.")
+
         raise KeyError("Missing the categories key.")
 
     if "link" not in doc:
@@ -44,10 +47,10 @@ def post_document(doc: dict):
                categories=doc["categories"],
                link=doc["link"])
 
-    resp = requests.post(url="http://127.0.0.1:5000/api/news/", json=doc)
+    resp = requests.post(url=f"{os.getenv('API_BASE_URL')}/api/news/", json=doc)
 
     if not resp.ok:
-        raise RuntimeError()
+        raise RuntimeError(f"Failed to post doc: {doc}")
 
     return resp.json()
 
@@ -58,7 +61,7 @@ news = dict(title="Title",
             author="Author",
             timestamp=moment.timestamp(),
             categories=[ "A", "B" ],
-            link="https://www.google.com/")
+            link="localhost")
 
 print(post_document(doc=news))
 

@@ -1,5 +1,7 @@
+import datetime as dt
+
 import flask
-import pymongo
+
 import pymongo.results
 
 import connector
@@ -27,7 +29,8 @@ def create_news():
         r: pymongo.results.InsertOneResult = db.rawCollection.insert_one(doc)
 
         return flask.jsonify(id=str(r.inserted_id))
-    except:
+    except Exception as e:
+        print(f"[{dt.datetime.now().strftime('%H:%M - %d/%m/%Y')}] {doc_in} {e.__class__} {e}", file=connector.get_log_file())
         return flask.abort(406)
 
 @bp.route("/", methods=[ "GET" ])
