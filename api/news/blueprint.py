@@ -20,8 +20,9 @@ def create_news():
 
     try:
         doc = dict(title=doc_in["title"],
+                   subtitle=doc_in["subtitle"],
                    content=doc_in["content"],
-                   author=doc_in["author"],
+                   authors=doc_in["authors"],
                    timestamp=doc_in["timestamp"],
                    categories=doc_in["categories"],
                    link=doc_in["link"])
