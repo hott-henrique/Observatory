@@ -1,5 +1,3 @@
-import os
-
 import flask
 
 import api
@@ -13,6 +11,11 @@ def create_app():
     @app.teardown_appcontext
     def close_connection(_):
         f = getattr(flask.g, "_APP_LOGFILE", None)
+
+        if f is not None:
+            f.close()
+
+        f = getattr(flask.g, "_APP_LINKSFILE", None)
 
         if f is not None:
             f.close()
