@@ -5,9 +5,9 @@ import flask
 import connector
 
 
-bp = flask.Blueprint("news", __name__, url_prefix="/news")
+bp = flask.Blueprint("links", __name__, url_prefix="/links")
 
-@bp.route("/links/", methods=[ "POST" ])
+@bp.route("/", methods=[ "POST" ])
 def createc_link():
     if not flask.request.is_json:
         return flask.abort(415, "Expected a JSON object.")
@@ -16,7 +16,7 @@ def createc_link():
 
     try:
         print(f"{link_in['link']}", file=connector.get_links_file())
-        return flask.jsonify()
+        return flask.jsonify(success=True)
     except Exception as e:
         print(f"[{dt.datetime.now().strftime('%H:%M - %d/%m/%Y')}] {link_in} {e.__class__} {e}", file=connector.get_log_file())
         return flask.abort(406)
