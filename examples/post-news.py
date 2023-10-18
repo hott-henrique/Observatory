@@ -11,12 +11,6 @@ def post_document(doc: dict):
     if type(doc["title"]) is not str:
         raise TypeError("The title must be an str.")
 
-    if "subtitle" not in doc:
-        raise KeyError("Missing the subtitle key.")
-
-    if type(doc["subtitle"]) is not str:
-        raise TypeError("The subtitle must be an str.")
-
     if "content" not in doc:
         raise KeyError("Missing the content key.")
 
@@ -26,7 +20,7 @@ def post_document(doc: dict):
     if "authors" not in doc:
         raise KeyError("Missing the authors key.")
 
-    if type(doc["authors"]) is not str:
+    if type(doc["authors"]) is not list:
         for author in doc["authors"]:
             if type(author) is not str:
                 raise TypeError("Each author must be an str.")
@@ -55,7 +49,6 @@ def post_document(doc: dict):
         raise TypeError()
 
     doc = dict(title=doc["title"],
-               subtitle=doc["subtitle"],
                content=doc["content"],
                authors=doc["authors"],
                timestamp=doc["timestamp"],
