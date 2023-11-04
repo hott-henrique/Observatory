@@ -8,10 +8,20 @@ cd Observatory
 pip install -r requirements.txt
 ```
 
-## Running the server
+## Running the servers
+
+In order to the archtecture work properly two servers must be running: Milvus Lite and the API.
+
+### Milvus Lite
+```bash
+mkdir -p .milvus
+milvus-server --data .milvus
+```
+
+### API
 ```bash
 export JOURNALIST_USER="MONGODB_USER" && export JOURNALIST_PWD="MONGODB_USER_PASSWORD"
-uwsgi --http ADDRESS:PORT --master -p NUM_WORKERS -w wsgi:app
+uvicorn --host 0.0.0.0 --port 8080 app.main:app
 ```
 
 ## Testing

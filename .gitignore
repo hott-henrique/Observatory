@@ -13,4 +13,4 @@ venv.bak/
 # Local data
 .data/
 .STORAGE/
-
+.milvus/
