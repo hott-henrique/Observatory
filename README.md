@@ -1,6 +1,8 @@
 # Observatory
 Observatory is a part of a team-developed project to collect and analyze news.
 
+![image](assets/Architecture.drawio.png)
+
 ## Installing
 ```bash
 git clone https://github.com/hott-henrique/Observatory.git
@@ -9,7 +11,6 @@ pip install -r requirements.txt
 ```
 
 ## Running the servers
-
 In order to the archtecture work properly two servers must be running: Milvus Lite and the API.
 
 ### Milvus Lite
