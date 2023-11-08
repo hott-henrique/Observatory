@@ -10,7 +10,7 @@ class News(pydantic.BaseModel):
     content: str
     timestamp: float
     categories: list[str]
-    link: list[str]
+    link: str
 
 router = fastapi.APIRouter(prefix='/news')
 
