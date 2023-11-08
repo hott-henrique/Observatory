@@ -35,7 +35,7 @@ def create(d: NewsEmbedding, request: fastapi.Request):
     r = milvus.query('embeddings', filter=f'document_id == "{d.document_id}"')
 
     if r:
-        raise fastapi.HTTPException(status_code=409, detail="Trying to overwrite an document representation..")
+        raise fastapi.HTTPException(status_code=409, detail="Trying to overwrite an document representation.")
 
     r = milvus.insert('embeddings', [ dict(document_id=d.document_id, representation=d.representation) ])
 
