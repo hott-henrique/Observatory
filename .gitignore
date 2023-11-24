@@ -11,6 +11,4 @@ env.bak/
 venv.bak/
 
 # Local data
-.data/
-.STORAGE/
-.milvus/
+run.bash
