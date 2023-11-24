@@ -1,4 +1,10 @@
-import fastapi, pymongo, pymilvus, pydantic, bson
+import uuid
+
+import fastapi, pymongo, pydantic, bson
+
+import qdrant_client as qdrant
+
+from qdrant_client import models
 
 
 class NewsEmbedding(pydantic.BaseModel):
@@ -9,14 +15,16 @@ router = fastapi.APIRouter(prefix='/embeddings')
 
 @router.get('/{document_id}')
 def read(document_id: str, request: fastapi.Request):
-    milvus: pymilvus.MilvusClient = request.app.state._MILVUS_CLIENT
+    qdrant_client: qdrant.QdrantClient = request.app.state._QDRANT_CLIENT
 
-    r = milvus.query('embeddings', filter=f'document_id == "{document_id}"')
+    id = '-'.join([ "42069000", document_id[0:4], document_id[4:8], document_id[8:12], document_id[12:] ])
 
-    if not r:
+    try:
+        response = qdrant_client.retrieve(collection_name="NewsEmbeddings", ids=[ id ], with_vectors=True)[0]
+    except:
         raise fastapi.HTTPException(status_code=404, detail="Embedding not found for document.")
 
-    return NewsEmbedding.model_validate(r.pop())
+    return NewsEmbedding.model_validate(dict(document_id=document_id, representation=response.vector))
 
 @router.post('/')
 def create(d: NewsEmbedding, request: fastapi.Request):
@@ -28,17 +36,14 @@ def create(d: NewsEmbedding, request: fastapi.Request):
         if not r:
             raise Exception()
     except:
-        raise fastapi.HTTPException(status_code=404, detail="Trying to create an representation for an inexistent document.")
+        raise fastapi.HTTPException(status_code=404, detail="Trying to create a representation for an inexistent document.")
 
-    milvus: pymilvus.MilvusClient = request.app.state._MILVUS_CLIENT
+    qdrant_client: qdrant.QdrantClient = request.app.state._QDRANT_CLIENT
 
-    r = milvus.query('embeddings', filter=f'document_id == "{d.document_id}"')
+    id = '-'.join([ "42069000", d.document_id[0:4], d.document_id[4:8], d.document_id[8:12], d.document_id[12:] ])
 
-    if r:
-        raise fastapi.HTTPException(status_code=409, detail="Trying to overwrite an document representation.")
+    qdrant_client.upsert(collection_name="NewsEmbeddings",
+                         points=[ models.PointStruct(id=id, vector=d.representation) ])
 
-    r = milvus.insert('embeddings', [ dict(document_id=d.document_id, representation=d.representation) ])
+    return dict(document_id=d.document_id)
 
-    milvus.flush('embeddings')
-
-    return dict(document_id=r.pop())
