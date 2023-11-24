@@ -1,5 +1,3 @@
-import uuid
-
 import fastapi, pymongo, pydantic, bson
 
 import qdrant_client as qdrant
