@@ -45,3 +45,17 @@ def create(d: NewsEmbedding, request: fastapi.Request):
 
     return dict(document_id=d.document_id)
 
+@router.post('/similars/')
+def find_similars(request: fastapi.Request,
+                  vec: pydantic.conlist(float, min_length=768, max_length=768),
+                  n: int = 5):
+    qdrant_client: qdrant.QdrantClient = request.app.state._QDRANT_CLIENT
+
+    similars = qdrant_client.search(collection_name="NewsEmbeddings", query_vector=vec, limit=n)
+
+    qdrant_id_2_mongo_id = lambda qid: ''.join(qid.split('-')[1:])
+
+    mongo_ids = [ qdrant_id_2_mongo_id(scored_point.id) for scored_point in similars ]
+
+    return mongo_ids
+

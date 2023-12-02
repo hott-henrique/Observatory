@@ -16,7 +16,7 @@ async def lifespan(app: fastapi.FastAPI):
                                                   authSource='news')
 
     app.state._QDRANT_CLIENT = qdrant.QdrantClient(url=os.getenv("QDRANT_URL"),
-                                                   api_key=os.getenv("QDRANT_API_KEY"))
+                                                   api_key=os.getenv("QDRANT_TOKEN"))
 
     yield
 
