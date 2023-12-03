@@ -3,6 +3,9 @@ import pydantic
 import pymongo
 import bson
 
+import qdrant_client as qdrant
+
+
 
 class News(pydantic.BaseModel):
     title: str
@@ -49,3 +52,26 @@ def rand_news_from_each_category(n: str, request: fastapi.Request):
         news_by_category.extend(result)
 
     return news_by_category
+
+@router.get('/search/q={query}')
+def search(q: str, request: fastapi.Request):
+    mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
+    
+    qdrant_client: qdrant.QdrantClient = request.app.state._QDRANT_CLIENT
+
+    query = q.split(' ')
+    query = request.app.state._BERT_MODEL(query)
+
+    similars = qdrant_client.search(collection_name="NewsEmbeddings", query_vector=query, limit=10)
+
+    # PASS QDRAND ID TO MONGO ID
+    
+
+    news = {
+        News.model_validate(
+            mongo.news.rawCollection.find_one(filter={ "_id":  bson.ObjectId(document_id) })
+        )
+        for document_id in mongo_ids 
+    }
+
+    return news

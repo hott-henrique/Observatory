@@ -1,4 +1,5 @@
 import contextlib, os
+import torch
 
 import fastapi
 
@@ -17,6 +18,12 @@ async def lifespan(app: fastapi.FastAPI):
 
     app.state._QDRANT_CLIENT = qdrant.QdrantClient(url=os.getenv("QDRANT_URL"),
                                                    api_key=os.getenv("QDRANT_TOKEN"))
+    
+    try:
+        app.state._BERT_MODEL = torch.load("path/to/model", map_location=torch.device('cpu'))
+    except:
+        pass
+
 
     yield
 
