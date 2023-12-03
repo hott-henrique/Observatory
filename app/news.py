@@ -35,3 +35,17 @@ def delete(document_id: str, request: fastapi.Request):
     mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
     r = mongo.news.rawCollection.delete_one({ "_id":  bson.ObjectId(document_id) })
     return { 'deleted': r.deleted_count }
+
+@router.get('/randnews/{n}')
+def rand_news_from_each_category(n: str, request: fastapi.Request):
+    mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
+    categories = ["football", "basketball", "futebol americano", "baseball"]
+    news_by_category = list()
+    for cat in categories:
+        result = mongo.news.rawCollection.aggregate([
+            {"$match": {"categories": {"$in": [cat]}}}, 
+            {"$sample": {"size": int(n)}}
+        ])
+        news_by_category.extend(result)
+
+    return news_by_category

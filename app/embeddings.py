@@ -58,4 +58,3 @@ def find_similars(request: fastapi.Request,
     mongo_ids = [ qdrant_id_2_mongo_id(scored_point.id) for scored_point in similars ]
 
     return mongo_ids
-
