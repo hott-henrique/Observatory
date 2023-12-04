@@ -5,11 +5,17 @@ import bson
 import qdrant_client as qdrant
 import numpy as np
 
-from news import News
-
 class User(pydantic.BaseModel):
     name: str
     history: list[str]
+
+class News(pydantic.BaseModel):
+    title: str
+    authors: list[str]
+    content: str
+    timestamp: float
+    categories: list[str]
+    link: str
 
 router = fastapi.APIRouter(prefix='/users')
 

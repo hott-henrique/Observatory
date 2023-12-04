@@ -5,8 +5,6 @@ import bson
 
 import qdrant_client as qdrant
 
-
-
 class News(pydantic.BaseModel):
     title: str
     authors: list[str]
