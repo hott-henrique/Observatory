@@ -21,7 +21,7 @@ async def lifespan(app: fastapi.FastAPI):
                                                    api_key=os.getenv("QDRANT_TOKEN"))
     
     try:
-        app.state._BERT_MODEL = torch.load("../out_model/pytorch_model.bin", map_location=torch.device('cpu'))
+        app.state._BERT_MODEL = torch.load("./out_model/pytorch_model.bin", map_location=torch.device('cpu'))
     except:
         raise Exception("Could not load model.")
 
