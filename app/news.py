@@ -40,7 +40,7 @@ def delete(document_id: str, request: fastapi.Request):
     return { 'deleted': r.deleted_count }
 
 @router.get('/randnews/{n}')
-def rand_news_from_each_category(n: str, request: fastapi.Request):
+def rand_news_from_each_category(n: int, request: fastapi.Request):
     mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
     categories = ["football", "basketball", "futebol americano", "baseball"]
     news_by_category = list()
