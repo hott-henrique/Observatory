@@ -47,30 +47,14 @@ def rand_news_from_each_category(n: int, request: fastapi.Request):
             {"$match": {"categories": {"$in": [cat]}}}, 
             {"$sample": {"size": int(n)}}
         ])
-        news_by_category.extend(result)
+
+        for news in list(result):
+            news['_id'] = str(news['_id'])
+            news_by_category.append(news)
 
     return news_by_category
 
-@router.get('/search/{query}')
-def search(q: str, request: fastapi.Request):
-    mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
-    
-    qdrant_client: qdrant.QdrantClient = request.app.state._QDRANT_CLIENT
-
-    query = q.split(' ')
-    query = request.app.state._BERT_MODEL(query)
-
-    similars = qdrant_client.search(collection_name="NewsEmbeddings", query_vector=query, limit=10)
-
-    qdrant_id_2_mongo_id = lambda qid: ''.join(qid.split('-')[1:])
-
-    mongo_ids = [ qdrant_id_2_mongo_id(scored_point.id) for scored_point in similars ]
-
-    news = {
-        News.model_validate(
-            mongo.news.rawCollection.find_one(filter={ "_id":  bson.ObjectId(document_id) })
-        )
-        for document_id in mongo_ids 
-    }
-
-    return news
+#@router.get('/recents/{n}')
+#def most_recent_news(n: int, request: fastapi.Request):
+#    mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
+#
