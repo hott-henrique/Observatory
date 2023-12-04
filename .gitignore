@@ -12,3 +12,6 @@ venv.bak/
 
 # Local data
 run.bash
+
+# Folders
+out_model/

@@ -23,7 +23,7 @@ async def lifespan(app: fastapi.FastAPI):
     try:
         app.state._BERT_MODEL = torch.load("../out_model/pytorch_model.bin", map_location=torch.device('cpu'))
     except:
-        pass
+        raise Exception("Could not load model.")
 
 
     yield
