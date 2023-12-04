@@ -64,8 +64,9 @@ def search(q: str, request: fastapi.Request):
 
     similars = qdrant_client.search(collection_name="NewsEmbeddings", query_vector=query, limit=10)
 
-    # PASS QDRAND ID TO MONGO ID
-    
+    qdrant_id_2_mongo_id = lambda qid: ''.join(qid.split('-')[1:])
+
+    mongo_ids = [ qdrant_id_2_mongo_id(scored_point.id) for scored_point in similars ]
 
     news = {
         News.model_validate(
