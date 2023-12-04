@@ -51,7 +51,7 @@ def rand_news_from_each_category(n: int, request: fastapi.Request):
 
     return news_by_category
 
-@router.get('/search/q={query}')
+@router.get('/search/{query}')
 def search(q: str, request: fastapi.Request):
     mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
     
