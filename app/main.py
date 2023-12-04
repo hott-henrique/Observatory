@@ -8,6 +8,7 @@ import qdrant_client as qdrant
 
 from app import news
 from app import embeddings
+from app import users
 
 
 @contextlib.asynccontextmanager
@@ -35,4 +36,5 @@ app = fastapi.FastAPI(lifespan=lifespan)
 
 app.include_router(news.router)
 app.include_router(embeddings.router)
+app.include_router(users.router)
 
