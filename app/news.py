@@ -101,17 +101,8 @@ def most_recent_by_category(category: str, n: int, request: fastapi.Request):
         "timestamp", -1
     )
 
-    search = list()
-
-    for n in result[:n]:
-        n['_id'] = str(n['_id'])
-        if isinstance(n['timestamp'], str) and '-' in n['timestamp']:
-            continue
-        search.append(n)
-
-    search.sort(key=lambda news: float(news['timestamp']), reverse=True)
-
-    for news in list(search):
+    for news in list(result[:n]):
+        news['_id'] = str(news['_id'])
         news['timestamp'] = str(datetime.datetime.utcfromtimestamp(news['timestamp']).strftime('%d-%m-%Y'))
         full_news.append(news)
 
@@ -139,11 +130,15 @@ def search_query(s: Search, request: fastapi.Request):
     news = [ mongo.news.rawCollection.find_one(filter={ "_id":  bson.ObjectId(document_id) }) for document_id in mongo_ids ]
 
     valid_news = list()
+
     for n in news:
         n['_id'] = str(n['_id'])
-        n['timestamp'] = str(datetime.datetime.utcfromtimestamp(n['timestamp']).strftime('%d-%m-%Y'))
-        # valid_news.append(News.model_validate(n))
+        if isinstance(n['timestamp'], str) and '-' in n['timestamp']:
+            continue
         valid_news.append(n)
 
+    valid_news.sort(key=lambda news: float(news['timestamp']), reverse=True)
+    for news in valid_news:
+        news['timestamp'] = str(datetime.datetime.utcfromtimestamp(news['timestamp']).strftime('%d-%m-%Y'))
 
     return valid_news
