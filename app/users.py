@@ -55,7 +55,7 @@ def update(name: str, item_id: str, request: fastapi.Request):
     return r.modified_count
 
 @router.get('/{name}/recommender/{n}')
-def recommender(name: str, n: str, request: fastapi.Request):
+def recommender(name: str, n: int, request: fastapi.Request):
 
     mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
     qdrant_client: qdrant.QdrantClient = request.app.state._QDRANT_CLIENT
@@ -86,11 +86,11 @@ def recommender(name: str, n: str, request: fastapi.Request):
     response = qdrant_client.retrieve(collection_name="NewsEmbeddings", ids=qdrant_ids, with_vectors=True)
     vec = np.array([np.array(v.vector) for v in response])
     user_vec = vec.mean(axis=0)
-    similars = qdrant_client.search(collection_name="NewsEmbeddings", query_vector=user_vec, limit=50)
+    similars_points = qdrant_client.search(collection_name="NewsEmbeddings", query_vector=user_vec, limit=50)
 
     qdrant_id_2_mongo_id = lambda qid: ''.join(qid.split('-')[1:])
 
-    mongo_ids = [ qdrant_id_2_mongo_id(scored_point.id) for scored_point in similars 
+    mongo_ids = [ qdrant_id_2_mongo_id(scored_point.id) for scored_point in similars_points 
                  if qdrant_id_2_mongo_id(scored_point.id) not in u.history][:n]
 
     rec_news = {
