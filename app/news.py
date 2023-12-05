@@ -101,8 +101,17 @@ def most_recent_by_category(category: str, n: int, request: fastapi.Request):
         "timestamp", -1
     )
 
-    for news in list(result[:n]):
-        news['_id'] = str(news['_id'])
+    search = list()
+
+    for n in result[:n]:
+        n['_id'] = str(n['_id'])
+        if isinstance(n['timestamp'], str) and '-' in n['timestamp']:
+            continue
+        search.append(n)
+
+    search.sort(key=lambda news: float(news['timestamp']), reverse=True)
+
+    for news in list(search):
         news['timestamp'] = str(datetime.datetime.utcfromtimestamp(news['timestamp']).strftime('%d-%m-%Y'))
         full_news.append(news)
 
