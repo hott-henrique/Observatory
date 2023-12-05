@@ -82,6 +82,7 @@ def recommender(name: str, n: int, request: fastapi.Request):
     qdrant_ids = [
         '-'.join([ "42069000", document_id[0:4], document_id[4:8], document_id[8:12], document_id[12:] ])
         for document_id in u.history
+        if document_id != "undefined"
     ]
 
     response = qdrant_client.retrieve(collection_name="NewsEmbeddings", ids=qdrant_ids, with_vectors=True)
