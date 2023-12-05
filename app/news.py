@@ -132,10 +132,9 @@ def search_query(s: Search, request: fastapi.Request):
     valid_news = list()
     for n in news:
         n['_id'] = str(n['_id'])
-        valid_news.append(News.model_validate(n))
-
-    for n in valid_news:
         n['timestamp'] = str(datetime.datetime.utcfromtimestamp(n['timestamp']).strftime('%d-%m-%Y'))
+        # valid_news.append(News.model_validate(n))
+        valid_news.append(n)
 
 
     return valid_news
