@@ -6,8 +6,10 @@ import qdrant_client as qdrant
 import numpy as np
 
 class User(pydantic.BaseModel):
+    id: int
     name: str
     history: list[str]
+    password: str
 
 class News(pydantic.BaseModel):
     title: str
