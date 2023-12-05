@@ -73,9 +73,7 @@ def recommender(name: str, n: int, request: fastapi.Request):
             result = mongo.news.rawCollection.aggregate([
                 {"$match": {"categories": {"$in": [cat]}}}, 
                 {"$sample": {"size": int(n)}}
-            ]).sort(
-                'timestamp', -1
-            )
+            ])
 
         news_by_category.extend(result)
         return news_by_category
