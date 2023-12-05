@@ -5,6 +5,7 @@ import bson
 import qdrant_client as qdrant
 import numpy as np
 import typing as t
+import datetime
 
 class User(pydantic.BaseModel):
     name: str
@@ -102,8 +103,12 @@ def recommender(name: str, n: int, request: fastapi.Request):
 
     for n in rec_news:
         n['_id'] = str(n['_id'])
-        recommendations.append(News.model_validate(n))   
+        if isinstance(n['timestamp'], str) and '-' in n['timestamp']:
+            continue
+        recommendations.append(n)
 
-    
+    recommendations.sort(key=lambda news: float(news['timestamp']), reverse=True)
+    for news in recommendations:
+        news['timestamp'] = str(datetime.datetime.utcfromtimestamp(news['timestamp']).strftime('%d-%m-%Y'))
 
     return recommendations
