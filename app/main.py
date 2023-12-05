@@ -2,6 +2,7 @@ import contextlib, os
 import torch
 
 import fastapi
+from fastapi.middleware.cors import CORSMiddleware
 
 import pymongo
 import qdrant_client as qdrant
@@ -29,7 +30,7 @@ async def lifespan(app: fastapi.FastAPI):
 app = fastapi.FastAPI(lifespan=lifespan)
 
 app.add_middleware(
-    fastapi.middleware.cors.CORSMiddleware,
+    CORSMiddleware,
     allow_origins=["*"],  # Permitir solicitações de qualquer origem
     allow_credentials=True,
     allow_methods=["*"],  # Permitir todos os métodos (GET, POST, etc.)
