@@ -77,7 +77,16 @@ def recommender(name: str, n: int, request: fastapi.Request):
             ])
 
         news_by_category.extend(result)
-        return news_by_category
+
+        recommendations = list()
+
+        for n in news_by_category:
+            n['_id'] = str(n['_id'])
+            if isinstance(n['timestamp'], str) and '-' in n['timestamp']:
+                continue
+            recommendations.append(n)
+
+        return recommendations
 
     qdrant_ids = [
         '-'.join([ "42069000", document_id[0:4], document_id[4:8], document_id[8:12], document_id[12:] ])
