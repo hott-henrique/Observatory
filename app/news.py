@@ -3,6 +3,7 @@ import pydantic
 import pymongo
 import bson
 import datetime
+import requests
 
 import qdrant_client as qdrant
 
@@ -95,3 +96,27 @@ def most_recent_by_category(category: str, n: int, request: fastapi.Request):
         full_news.append(news)
 
     return full_news
+
+
+@router.get('/search/')
+def search_query(q: str, request: fastapi.Request):
+    mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
+
+    qdrant_client: qdrant.QdrantClient = request.app.state._QDRANT_CLIENT
+
+    vector = requests.get("http://172.18.0.216:8080/search/", params=dict(q=q))
+
+    similars = qdrant_client.search(collection_name="NewsEmbeddings", query_vector=vector, limit=50)
+
+    qdrant_id_2_mongo_id = lambda qid: ''.join(qid.split('-')[1:])
+
+    mongo_ids = [ qdrant_id_2_mongo_id(scored_point.id) for scored_point in similars ]
+
+    news = {
+        News.model_validate(
+            mongo.news.rawCollection.find_one(filter={ "_id":  bson.ObjectId(document_id) })
+        )
+        for document_id in mongo_ids 
+    }
+
+    return news
