@@ -105,9 +105,11 @@ def search_query(q: str, request: fastapi.Request):
 
     qdrant_client: qdrant.QdrantClient = request.app.state._QDRANT_CLIENT
 
-    vector = requests.get("http://172.18.0.216:8080/news/search/", params=dict(q=q))
+    response = requests.get("http://172.18.0.216:8080/news/search/", params=dict(q=q))
 
-    vector = vector.json()['embeddings']
+    response_obj = response.json()
+
+    vector = response_obj['embeddings']
 
     similars = qdrant_client.search(collection_name="NewsEmbeddings", query_vector=vector, limit=50)
 
