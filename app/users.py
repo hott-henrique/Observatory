@@ -7,7 +7,6 @@ import numpy as np
 import typing as t
 
 class User(pydantic.BaseModel):
-    id: int
     name: str
     history: t.Optional[list[str]] = list()
     password: str
@@ -26,7 +25,7 @@ router = fastapi.APIRouter(prefix='/users')
 def create(u: User, request: fastapi.Request):
     mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
     r = mongo.news.usersLog.insert_one(dict(u))
-    return { 'user_id': str(u.inserted_id) }
+    return { 'user_id': str(r.inserted_id) }
 
 @router.get('/{user_id}')
 def read(user_id: str, request: fastapi.Request):
