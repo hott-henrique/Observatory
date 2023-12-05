@@ -51,7 +51,7 @@ def rand_news_from_each_category(n: int, request: fastapi.Request):
 
         for news in list(result):
             news['_id'] = str(news['_id'])
-            news['timestamp'] = str(datetime.datetime.fromtimestamp(news['timestamp']))
+            news['timestamp'] = str(datetime.datetime.utcfromtimestamp(news['timestamp']).strftime('%d-%m-%Y'))
             news_by_category.append(news)
 
     return news_by_category
@@ -69,7 +69,7 @@ def most_recent_news(n: int, request: fastapi.Request):
 
     for news in list(result[:n]):
         news['_id'] = str(news['_id'])
-        news['timestamp'] = str(datetime.datetime.fromtimestamp(news['timestamp']))
+        news['timestamp'] = str(datetime.datetime.utcfromtimestamp(news['timestamp']).strftime('%d-%m-%Y'))
         full_news.append(news)
 
     return full_news
@@ -91,7 +91,7 @@ def most_recent_by_category(category: str, n: int, request: fastapi.Request):
 
     for news in list(result[:n]):
         news['_id'] = str(news['_id'])
-        news['timestamp'] = str(datetime.datetime.fromtimestamp(news['timestamp']))
+        news['timestamp'] = str(datetime.datetime.utcfromtimestamp(news['timestamp']).strftime('%d-%m-%Y'))
         full_news.append(news)
 
     return full_news
