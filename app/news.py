@@ -57,11 +57,11 @@ def rand_news_from_each_category(n: int, request: fastapi.Request):
             news['_id'] = str(news['_id'])
             news_by_category.append(news)
 
-    news_by_category.sort(key=lambda news: float(news['timestamp']))
+    news_by_category.sort(key=lambda news: float(news['timestamp']), reverse=True)
     for news in news_by_category:
         news['timestamp'] = str(datetime.datetime.utcfromtimestamp(news['timestamp']).strftime('%d-%m-%Y'))
 
-    return news_by_category[:n]
+    return news_by_category[:n * len(categories)]
 
 
 @router.get('/recents/{n}')
