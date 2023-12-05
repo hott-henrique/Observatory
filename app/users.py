@@ -94,9 +94,7 @@ def recommender(name: str, n: int, request: fastapi.Request):
                  if qdrant_id_2_mongo_id(scored_point.id) not in u.history][:n]
 
     rec_news = [
-        News.model_validate(
-            mongo.news.rawCollection.find_one(filter={ "_id":  bson.ObjectId(document_id) })
-        )
+        mongo.news.rawCollection.find_one(filter={ "_id":  bson.ObjectId(document_id) })
         for document_id in mongo_ids 
     ]
 
