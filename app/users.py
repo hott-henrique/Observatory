@@ -28,25 +28,25 @@ def create(u: User, request: fastapi.Request):
     return { 'user_id': str(r.inserted_id) }
 
 @router.get('/')
-def read(user_id: str, request: fastapi.Request):
+def read(name: str, request: fastapi.Request):
     mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
-    r = mongo.news.usersLog.find_one(filter={ "_id":  bson.ObjectId(user_id) })
+    r = mongo.news.usersLog.find_one(filter={ "name":  name })
 
     if r is None:
         raise fastapi.HTTPException(status_code=404, detail="User not found.")
 
     return User.model_validate(r)
 
-@router.delete('/{user_id}')
-def delete(user_id: str, request: fastapi.Request):
+@router.delete('/')
+def delete(name: str, request: fastapi.Request):
     mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
-    r = mongo.news.usersLog.delete_one({ "_id":  bson.ObjectId(user_id) })
+    r = mongo.news.usersLog.delete_one({ "name":  name })
     return { 'deleted': r.deleted_count }
 
-@router.post('/{user_id}/read/{item_id}')
-def update(user_id: str, item_id: str, request: fastapi.Request):
+@router.post('/{name}/read/{item_id}')
+def update(name: str, item_id: str, request: fastapi.Request):
     mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
-    r = mongo.news.usersLog.update_one(filter= { "_id":  bson.ObjectId(user_id) },\
+    r = mongo.news.usersLog.update_one(filter= { "name":  name },\
                                             update= {'$push': {'history': item_id}})
 
     if not r.modified_count:
@@ -54,13 +54,13 @@ def update(user_id: str, item_id: str, request: fastapi.Request):
 
     return r.modified_count
 
-@router.get('/{user_id}/recommender/{n}')
-def recommender(user_id: str, n: str, request: fastapi.Request):
+@router.get('/{name}/recommender/{n}')
+def recommender(name: str, n: str, request: fastapi.Request):
 
     mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
     qdrant_client: qdrant.QdrantClient = request.app.state._QDRANT_CLIENT
 
-    r = mongo.news.usersLog.find_one(filter= { "_id":  bson.ObjectId(user_id) })
+    r = mongo.news.usersLog.find_one(filter= { "name":  name })
     if r is None:
         raise fastapi.HTTPException(status_code=404, detail="User not found.")
     
