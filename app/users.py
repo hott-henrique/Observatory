@@ -27,7 +27,7 @@ def create(u: User, request: fastapi.Request):
     r = mongo.news.usersLog.insert_one(dict(u))
     return { 'user_id': str(r.inserted_id) }
 
-@router.get('/{user_id}')
+@router.get('/')
 def read(user_id: str, request: fastapi.Request):
     mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
     r = mongo.news.usersLog.find_one(filter={ "_id":  bson.ObjectId(user_id) })
