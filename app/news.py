@@ -54,7 +54,20 @@ def rand_news_from_each_category(n: int, request: fastapi.Request):
 
     return news_by_category
 
-#@router.get('/recents/{n}')
-#def most_recent_news(n: int, request: fastapi.Request):
-#    mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
-#
+@router.get('/recents/{n}')
+def most_recent_news(n: int, request: fastapi.Request):
+    mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
+
+    categories = ["football", "basketball", "futebol americano", "baseball"]
+    news_by_category = list()
+
+    for cat in categories:
+        result = mongo.news.rawCollection.find().sort(
+            "timestamp", 1
+        )
+
+        for news in list(result[:n]):
+            news['_id'] = str(news['_id'])
+            news_by_category.append(news)
+
+    return news_by_category
