@@ -52,14 +52,13 @@ def rand_news_from_each_category(n: int, request: fastapi.Request):
         ])
 
         for news in list(result):
-            if isinstance(news['timestamp'], float):
+            if isinstance(news['timestamp'], float) and '-' not in news['timestamp']:
                 news['_id'] = str(news['_id'])
                 news_by_category.append(news)
 
-        news_by_category.sort(key=lambda news: float(news['timestamp']))
-
-        for news in news_by_category:
-            news['timestamp'] = str(datetime.datetime.utcfromtimestamp(news['timestamp']).strftime('%d-%m-%Y'))
+    news_by_category.sort(key=lambda news: float(news['timestamp']))
+    for news in news_by_category:
+        news['timestamp'] = str(datetime.datetime.utcfromtimestamp(news['timestamp']).strftime('%d-%m-%Y'))
 
     return news_by_category[:n]
 
