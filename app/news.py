@@ -104,7 +104,7 @@ def most_recent_by_category(category: str, n: int, request: fastapi.Request):
     return full_news
 
 
-@router.get('/search/{n}/{q}')
+@router.post('/search/')
 def search_query(q: str, n: int, request: fastapi.Request):
     mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
 
