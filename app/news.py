@@ -61,9 +61,9 @@ def most_recent_news(n: int, request: fastapi.Request):
     categories = ["football", "basketball", "futebol americano", "baseball"]
     news_by_category = list()
 
-    for cat in categories:
+    for cat in categories:  
         result = mongo.news.rawCollection.find().sort(
-            "timestamp", 1
+            "timestamp", -1
         )
 
         for news in list(result[:n]):
