@@ -100,7 +100,7 @@ def most_recent_by_category(category: str, n: int, request: fastapi.Request):
 
 
 @router.get('/search/')
-def search_query(q: str, request: fastapi.Request):
+def search_query(q: str, n: int, request: fastapi.Request):
     mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
 
     qdrant_client: qdrant.QdrantClient = request.app.state._QDRANT_CLIENT
@@ -111,7 +111,7 @@ def search_query(q: str, request: fastapi.Request):
 
     vector = response_obj['embeddings']
 
-    similars = qdrant_client.search(collection_name="NewsEmbeddings", query_vector=vector, limit=50)
+    similars = qdrant_client.search(collection_name="NewsEmbeddings", query_vector=vector, limit=n)
 
     qdrant_id_2_mongo_id = lambda qid: ''.join(qid.split('-')[1:])
 
