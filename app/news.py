@@ -14,6 +14,11 @@ class News(pydantic.BaseModel):
     timestamp: float
     categories: list[str]
     link: str
+
+
+class Search(pydantic.BaseModel):
+    q: str
+    n: int
     
 
 router = fastapi.APIRouter(prefix='/news')
@@ -105,18 +110,18 @@ def most_recent_by_category(category: str, n: int, request: fastapi.Request):
 
 
 @router.post('/search/')
-def search_query(q: str, n: int, request: fastapi.Request):
+def search_query(s: Search, request: fastapi.Request):
     mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
 
     qdrant_client: qdrant.QdrantClient = request.app.state._QDRANT_CLIENT
 
-    response = requests.get("http://172.18.0.216:8080/news/search/", params=dict(q=q))
+    response = requests.get("http://172.18.0.216:8080/news/search/", params=dict(q=s.q))
 
     response_obj = response.json()
 
     vector = response_obj['embeddings']
 
-    similars = qdrant_client.search(collection_name="NewsEmbeddings", query_vector=vector, limit=n)
+    similars = qdrant_client.search(collection_name="NewsEmbeddings", query_vector=vector, limit=s.n)
 
     qdrant_id_2_mongo_id = lambda qid: ''.join(qid.split('-')[1:])
 
@@ -127,6 +132,6 @@ def search_query(q: str, n: int, request: fastapi.Request):
     valid_news = list()
     for n in news:
         n['_id'] = str(n['_id'])
-        valid_news.append(News.model_validate(n))
+        valid_news.append(News.model_validate(s.n))
 
     return valid_news
