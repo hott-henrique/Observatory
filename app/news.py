@@ -49,7 +49,9 @@ def rand_news_from_each_category(n: int, request: fastapi.Request):
         result = mongo.news.rawCollection.aggregate([
             {"$match": {"categories": {"$in": [cat]}}}, 
             {"$sample": {"size": int(n)}}
-        ])
+        ]).sort(
+            'timestamp', -1
+        )
 
         for news in list(result):
             news['_id'] = str(news['_id'])
