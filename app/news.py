@@ -48,10 +48,12 @@ def rand_news_from_each_category(n: int, request: fastapi.Request):
     for cat in categories:
         result = mongo.news.rawCollection.aggregate([
             {"$match": {"categories": {"$in": [cat]}}}, 
-            {"$sample": {"size": int(n)}}
+            {"$sample": {"size": int(n) * 10}}
         ])
 
         for news in list(result):
+            if '-' in news['timestamp']:
+                continue
             news['_id'] = str(news['_id'])
             news_by_category.append(news)
 
@@ -60,7 +62,7 @@ def rand_news_from_each_category(n: int, request: fastapi.Request):
         for news in news_by_category:
             news['timestamp'] = str(datetime.datetime.utcfromtimestamp(news['timestamp']).strftime('%d-%m-%Y'))
 
-    return news_by_category
+    return news_by_category[:n]
 
 
 @router.get('/recents/{n}')
