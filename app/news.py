@@ -52,7 +52,7 @@ def rand_news_from_each_category(n: int, request: fastapi.Request):
         ])
 
         for news in list(result):
-            if type(news['timestamp']) is float:
+            if type(news['timestamp']) == float:
                 news['_id'] = str(news['_id'])
                 news_by_category.append(news)
 
