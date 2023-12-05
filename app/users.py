@@ -9,7 +9,7 @@ import typing as t
 class User(pydantic.BaseModel):
     id: int
     name: str
-    history: t.Optional[list[str]]
+    history: t.Optional[list[str]] = list()
     password: str
 
 class News(pydantic.BaseModel):
