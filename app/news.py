@@ -117,11 +117,14 @@ def search_query(q: str, request: fastapi.Request):
 
     mongo_ids = [ qdrant_id_2_mongo_id(scored_point.id) for scored_point in similars ]
 
-    news = {
+    news = [
         News.model_validate(
             mongo.news.rawCollection.find_one(filter={ "_id":  bson.ObjectId(document_id) })
         )
         for document_id in mongo_ids 
-    }
+    ]
+
+    for n in news:
+        n['_id'] = str(n['_id'])
 
     return news
