@@ -4,11 +4,12 @@ import pymongo
 import bson
 import qdrant_client as qdrant
 import numpy as np
+import typing as t
 
 class User(pydantic.BaseModel):
     id: int
     name: str
-    history: list[str]
+    history: t.Optional[list[str]]
     password: str
 
 class News(pydantic.BaseModel):
