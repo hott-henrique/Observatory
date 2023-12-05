@@ -49,14 +49,15 @@ def rand_news_from_each_category(n: int, request: fastapi.Request):
         result = mongo.news.rawCollection.aggregate([
             {"$match": {"categories": {"$in": [cat]}}}, 
             {"$sample": {"size": int(n)}}
-        ])
+        ]).sort(
+            'timestamp', -1
+        )
 
         for news in list(result):
             news['_id'] = str(news['_id'])
             news['timestamp'] = str(datetime.datetime.utcfromtimestamp(news['timestamp']).strftime('%d-%m-%Y'))
             news_by_category.append(news)
 
-    news_by_category.sort(key=lambda new: new['timestamp'])
 
     return news_by_category
 
