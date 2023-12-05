@@ -93,13 +93,17 @@ def recommender(name: str, n: int, request: fastapi.Request):
     mongo_ids = [ qdrant_id_2_mongo_id(scored_point.id) for scored_point in similars_points 
                  if qdrant_id_2_mongo_id(scored_point.id) not in u.history][:n]
 
-    rec_news = {
+    rec_news = [
         News.model_validate(
             mongo.news.rawCollection.find_one(filter={ "_id":  bson.ObjectId(document_id) })
         )
         for document_id in mongo_ids 
-    }
+    ]
 
-    
+    recommendations = list()
 
-    return rec_news
+    for n in rec_news:
+        n['_id'] = str(n['_id'])
+        recommendations.append(News.model_validate(n))   
+
+    return recommendations
