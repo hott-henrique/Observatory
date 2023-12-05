@@ -84,7 +84,7 @@ def most_recent_by_category(category: str, n: int, request: fastapi.Request):
         return {}
      
     result = mongo.news.rawCollection.find(
-        {"$match": {"categories": {"$in": [category]}}}
+        {"categories": category}
     ).sort(
         "timestamp", -1
     )
