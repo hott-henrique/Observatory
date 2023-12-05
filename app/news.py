@@ -2,6 +2,7 @@ import fastapi
 import pydantic
 import pymongo
 import bson
+import datetime
 
 import qdrant_client as qdrant
 
@@ -50,9 +51,11 @@ def rand_news_from_each_category(n: int, request: fastapi.Request):
 
         for news in list(result):
             news['_id'] = str(news['_id'])
+            news['timestamp'] = str(datetime.datetime.fromtimestamp(news['timestamp']))
             news_by_category.append(news)
 
     return news_by_category
+
 
 @router.get('/recents/{n}')
 def most_recent_news(n: int, request: fastapi.Request):
@@ -66,25 +69,29 @@ def most_recent_news(n: int, request: fastapi.Request):
 
     for news in list(result[:n]):
         news['_id'] = str(news['_id'])
+        news['timestamp'] = str(datetime.datetime.fromtimestamp(news['timestamp']))
         full_news.append(news)
 
     return full_news
 
-# @router.get('/recents/{category}/{n}')
-# def most_recent_by_category(category: str, n: int, request: fastapi.Request):
-#     mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
+@router.get('/recents/{category}/{n}')
+def most_recent_by_category(category: str, n: int, request: fastapi.Request):
+    mongo: pymongo.MongoClient = request.app.state._MONGO_CLIENT
 
-#     full_news = list()
+    full_news = list()
 
+    if category not in ["football", "basketball", "futebol americano", "baseball"]:
+        return {}
      
-#     result = mongo.news.rawCollection.find(
-#             {"$match": {"categories": {"$in": [cat]}}}
-#         ).sort(
-#             "timestamp", -1
-#         )
+    result = mongo.news.rawCollection.find(
+        {"$match": {"categories": {"$in": [category]}}}
+    ).sort(
+        "timestamp", -1
+    )
 
-#     for news in list(result[:n]):
-#             news['_id'] = str(news['_id'])
-#             full_news.append(news)
+    for news in list(result[:n]):
+        news['_id'] = str(news['_id'])
+        news['timestamp'] = str(datetime.datetime.fromtimestamp(news['timestamp']))
+        full_news.append(news)
 
-#     return full_news
+    return full_news
