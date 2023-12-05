@@ -73,9 +73,8 @@ def recommender(name: str, n: str, request: fastapi.Request):
             result = mongo.news.rawCollection.aggregate([
                 {"$match": {"categories": {"$in": [cat]}}}, 
                 {"$sample": {"size": int(n)}}
-            ]).sort(
-                'timestamp', -1
-            )
+            ])
+
         news_by_category.extend(result)
         return news_by_category
 
@@ -83,6 +82,7 @@ def recommender(name: str, n: str, request: fastapi.Request):
         '-'.join([ "42069000", document_id[0:4], document_id[4:8], document_id[8:12], document_id[12:] ])
         for document_id in u.history
     ]
+
     response = qdrant_client.retrieve(collection_name="NewsEmbeddings", ids=qdrant_ids, with_vectors=True)
     vec = np.array([np.array(v.vector) for v in response])
     user_vec = vec.mean(axis=0)
@@ -99,5 +99,7 @@ def recommender(name: str, n: str, request: fastapi.Request):
         )
         for document_id in mongo_ids 
     }
+
+    
 
     return rec_news
