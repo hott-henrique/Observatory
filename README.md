@@ -2,8 +2,6 @@
 
 Observatory is a part of a team-developed project to collect and analyze news.
 
-![image](assets/Architecture.drawio.png)
-
 ## Installing
 
 ```bash
